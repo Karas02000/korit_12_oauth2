@@ -28,13 +28,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authHeader = request.getHeader("Authorization");
 
-        String token = authHeader == null ? null : authHeader.replace("Bearer ", "");
-        filterChain.doFilter(request,response);
+        String token = request.getHeader("Authorization");
 
-        if (!jwtService.validateToken(token)) {
-            filterChain.doFilter(request,response);
-            return;
+        // 🚨 [여기가 핵심!] 토큰이 null이거나 비어있으면, 검증을 시도하지 않고 바로 다음 필터로 넘깁니다.
+        if (token == null || token.trim().isEmpty()) {
+            filterChain.doFilter(request, response);
+            return; // 메서드 종료
         }
+
+        try {
+            // 2. 토큰이 있을 때만 검증을 시도합니다. (기존 작성하신 코드)
+            if (jwtService.validateToken(token)) {
+                // ... Authentication 객체 생성 및 SecurityContextHolder에 저장 로직 ...
+            }
+        } catch (Exception e) {
+            // 토큰이 유효하지 않은 경우의 예외 처리 (필요시)
+            System.out.println("JWT 검증 실패: " + e.getMessage());
+        }
+
+        // 3. 다음 필터로 이동
+        filterChain.doFilter(request, response);
 
         String email=jwtService.extractEmail(token);
         String role=jwtService.extractRole(token);

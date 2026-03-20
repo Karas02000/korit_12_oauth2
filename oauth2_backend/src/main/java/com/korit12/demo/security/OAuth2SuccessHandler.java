@@ -24,7 +24,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private final JwtService jwtService;
     private final UserRepository userRepository;
 
-    private static final String FRONTEND_REDIRECT_URL = "http://lacalhost:5173/oauth2/callback";
+    private static final String FRONTEND_REDIRECT_URL = "http://localhost:5173/oauth2/callback";
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
